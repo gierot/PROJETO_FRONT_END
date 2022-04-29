@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Grafico</title>
+    <link rel="stylesheet" href="estilo/normalize.css">
+    <link rel="stylesheet" href="estilo/estilo.css">
+    <!--os dois graficos-->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+</head>
+<body>
+    <header>
+        <p id="titulo">STATUS ALERTRACK</p>
+    </header>
+    <main>
+        <h1>Todo o serviço operacional</h1>
+        <h3>Atuações nos ultimos 10 anos</h3>
+      </main>
+    <article>
+      <div id="chartdiv"></div>
+    </article>
+    <div id="bolada">
+      <div id="left"><div id="chardiv2"></div></div> 
+      <div id="right">
+        <nav>
+            <table>
+              <p>Serviços<p>
+              <tr>
+                  <td> SacDigital <img src="img/verifica.png" alt="" title = "Atendimento ao cliente"></td>
+              </tr>
+              <tr>
+                  <td> Panfleto Online <img src="img/verifica.png" alt="" title = "Envio de Campanhas em massa"></td>
+              </tr>
+              <tr>
+                  <td>SMSIdeal <img src="img/settings.png" alt="" title = "Envio de Sms em massa"></td>
+              </tr>
+              <tr>
+                  <td>ConsultaIdeal <img src="img/exclamation-mark.png" alt="" title = "Consulta de Pessoas"></td>
+              </tr>
+              <tr>
+                  <td>WhatsApp <img src="img/verifica.png" alt="Envio de mensagens" title = ""></td>
+              </tr>
+          </table> 
+        </nav>       
+      </div>
+    </div>
+    
+      <link rel="import" href="test2.html">
+</body>
+<!-- Chart code -->
+<script>
+    am5.ready(function() {
+    
+    // Create root element
+    // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+    var root = am5.Root.new("chartdiv");
+    
+    
+    // Set themes
+    // https://www.amcharts.com/docs/v5/concepts/themes/
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+    
+    
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      panX: true,
+      panY: true,
+      wheelX: "panX",
+      wheelY: "zoomX",
+      layout: root.verticalLayout,
+      pinchZoomX:true
+    }));
+    
+    
+    // Add cursor
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+    var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+      behavior: "none"
+    }));
+    cursor.lineY.set("visible", false);
+    
+    
+    // The data
+    var data = [{
+      "year": "2012",
+      "Brasil": 683,
+      "Mexico": 146
+    }, {
+      "year": "2013",
+      "Brasil": 691,
+      "Mexico": 138
+    }, {
+      "year": "2014",
+      "Brasil": 642,
+      "Mexico": 127
+    }, {
+      "year": "2015",
+      "Brasil": 699,
+      "Mexico": 105
+    }, {
+      "year": "2016",
+      "Brasil": 721,
+      "Mexico": 109
+    }, {
+      "year": "2017",
+      "Brasil": 737,
+      "Mexico": 112
+    }, {
+      "year": "2018",
+      "Brasil": 680,
+      "Mexico": 101
+    }, {
+      "year": "2019",
+      "Brasil": 664,
+      "Mexico": 97
+    }, {
+      "year": "2020",
+      "Brasil": 648,
+      "Mexico": 93
+    }, {
+      "year": "2021",
+      "Brasil": 697,
+      "Mexico": 111
+    }, {
+      "year": "2022",
+      "Brasil": 633,
+      "Mexico": 87
+    }];
+    
+    
+    // Create axes
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+    var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+      categoryField: "year",
+      startLocation: 0.5,
+      endLocation: 0.5,
+      renderer: am5xy.AxisRendererX.new(root, {}),
+      tooltip: am5.Tooltip.new(root, {})
+    }));
+    
+    xAxis.data.setAll(data);
+    
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      min: 0,
+      max: 100,
+      calculateTotals: true,
+      numberFormat: "#'%'",
+      renderer: am5xy.AxisRendererY.new(root, {})
+    }));
+    
+    // Add series
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+    function createSeries(name, field) {
+      var series = chart.series.push(am5xy.LineSeries.new(root, {
+        name: name,
+        stacked: true,
+        xAxis: xAxis,
+        yAxis: yAxis,
+        valueYField: field,
+        categoryXField: "year",
+        valueYShow: "valueYTotalPercent",
+        legendValueText: "{valueY}",
+        tooltip: am5.Tooltip.new(root, {
+          pointerOrientation: "horizontal",
+          labelText: "[bold]{name}[/]\n{categoryX}: {valueYTotalPercent.formatNumber('#.0')}% ({valueY})"
+        })
+      }));
+    
+      series.fills.template.setAll({
+        fillOpacity: 0.5,
+        visible: true
+      });
+    
+      series.data.setAll(data);
+      series.appear(1000);
+    }
+    
+    createSeries("Brasil", "Brasil");
+    createSeries("Mexico", "Mexico");
+    
+    // Add scrollbar
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/
+    chart.set("scrollbarX", am5.Scrollbar.new(root, {
+      orientation: "horizontal"
+    }));
+    
+    
+    // Add legend
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+    var legend = chart.children.push(am5.Legend.new(root, {
+      centerX: am5.p50,
+      x: am5.p50
+    }));
+    
+    legend.data.setAll(chart.series.values);
+    
+    
+    // Make stuff animate on load
+    // https://www.amcharts.com/docs/v5/concepts/animations/
+    chart.appear(1000, 100);
+    
+    }); // end am5.ready()
+    </script>
+
+<!--script do segundo grafico-->
+
+<script>
+    am5.ready(function() {
+    
+    // Create root element
+    // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+    var root = am5.Root.new("chardiv2");
+    
+    
+    // Set themes
+    // https://www.amcharts.com/docs/v5/concepts/themes/
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+    
+    
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/
+    var chart = root.container.children.push(am5percent.PieChart.new(root, 
+    {
+      layout: root.verticalLayout,
+      innerRadius: am5.percent(50)
+    }));
+    
+    
+    // Create series
+    // https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series
+    var series = chart.series.push(am5percent.PieSeries.new(root, {
+      valueField: "value",
+      categoryField: "category",
+      alignLabels: false
+    }));
+    
+    series.labels.template.setAll({
+      textType: "circular",
+      centerX: 0,
+      centerY: 0
+    });
+    
+    
+    // Set data
+    // https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Setting_data
+    series.data.setAll([
+      { value: 4, category: "Sac.Digital" },
+      { value: 3, category: "Panfleto" },
+      { value: 1, category: "SMSIdeal" },
+      { value: 2, category: "Consulta" },
+      { value: 3, category: "WhatsApp"}
+    ]);
+    
+    
+    // Create legend
+    // https://www.amcharts.com/docs/v5/charts/percent-charts/legend-percent-series/
+    var legend = chart.children.push(am5.Legend.new(root, 
+    {
+      centerX: am5.percent(50),
+      x: am5.percent(50),
+      marginTop: 15,
+      marginBottom: 15,
+    }));
+    
+    legend.data.setAll(series.dataItems);
+    
+    
+    // Play initial series animation
+    // https://www.amcharts.com/docs/v5/concepts/animations/#Animation_of_series
+    series.appear(1000, 100);
+    
+    }); // end am5.ready()
+    </script>
+<!-- HTML -->
+</html>
